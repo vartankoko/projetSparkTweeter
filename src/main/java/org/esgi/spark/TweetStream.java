@@ -25,21 +25,6 @@ import java.util.*;
  */
 public class TweetStream implements Serializable{
 
-    //public static Map<String, Integer> mapRT = new HashMap<String, Integer>();
-    //public static Map<String, Integer> mapMention = new HashMap<String, Integer>();
-
-
-
-    /*public static void getTwitterMentions(UserMentionEntity[] mentionEntities){
-        for (UserMentionEntity mentionEntity : mentionEntities) {
-            if(mapMention.containsKey(mentionEntity.getName())){
-                mapMention.put(mentionEntity.getName(), mapMention.get(mentionEntity.getName())+1);
-            } else {
-                mapMention.put(mentionEntity.getName(), 1);
-            }
-        }
-    }*/
-
     public static void main(String[] args) {
 
         Accumulator<Integer>  cptTwitter ;
@@ -65,59 +50,7 @@ public class TweetStream implements Serializable{
 
         JavaReceiverInputDStream<Status> twitterStream = TwitterUtils.createStream(jssc, new String[]{args[0]});
 
-        // Without filter: Output text of all tweets
-        /*JavaDStream<String> statuses = twitterStream.map(
-                new Function<Status, String>() {
-                    public String call(Status status) { return status.getText(); }
-                }
-        );*/
-        /*JavaDStream<Status> tweetsWithRT = twitterStream.filter(
-                new Function<Status, Boolean>() {
-                    public Boolean call(Status status){
-                        if (status.getText() != null && status.isRetweet()){//status.getHashtagEntities().length != 0 && hashTagContains("ThursdayThoughts", status.getHashtagEntities())){ //&& status.getLang().toString().equalsIgnoreCase("fr")) {
-                            String name = status.getRetweetedStatus().getUser().getName();
-                            if(mapRT.containsKey(name)){
-                                mapRT.put(name, mapRT.get(name)+1);
-                            }else{
-                                mapRT.put(name, 1);
-                            }
-                            System.out.println("MAPRT length :"+mapRT.size());
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                }
-        );
 
-        JavaDStream<Status> tweetsWithMention = twitterStream.filter(
-                new Function<Status, Boolean>() {
-                    public Boolean call(Status status){
-                        if (status.getText() != null && status.getUserMentionEntities().length != 0){//status.getHashtagEntities().length != 0 && hashTagContains("ThursdayThoughts", status.getHashtagEntities())){ //&& status.getLang().toString().equalsIgnoreCase("fr")) {
-                            getTwitterMentions(status.getUserMentionEntities());
-                            System.out.println("MAPMENTION length :"+mapMention.size());
-                            return true;
-                        } else {
-                            return false;
-                        }
-                    }
-                }
-        );
-        JavaDStream<String> statuses = tweetsWithRT.map(
-                new Function<Status, String>() {
-                    public String call(Status status) {
-                        return "";
-                    }
-                }
-        );
-
-        JavaDStream<String> statuses2 = tweetsWithMention.map(
-                new Function<Status, String>() {
-                    public String call(Status status) {
-                        return "";
-                    }
-                }
-        );*/
         JavaDStream<String> words = twitterStream.flatMap(new FlatMapFunction<Status, String>() {
             @Override
             public Iterable<String> call(Status status) throws Exception {
@@ -160,15 +93,6 @@ public class TweetStream implements Serializable{
 
         //statuses.print();
         //statuses2.print();
-        /*System.out.println("MAPRT");
-        for (String s : mapRT.keySet()) {
-            System.out.println(s + " : " + mapRT.get(s));
-        }*/
-        /*System.out.println("MAPMENTION");
-        for (String s : mapMention.keySet()) {
-            System.out.println(s + " : " + mapMention.get(s));
-        }*/
-
         jssc.start();
         jssc.awaitTermination();
     }
